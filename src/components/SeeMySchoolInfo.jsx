@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const SeeMySchoolInfo = () => {
   const [userId, setUserId] = useState('');
   const [schoolInfo, setSchoolInfo] = useState(" ");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,6 +16,11 @@ const SeeMySchoolInfo = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  // Function to handle navigation
+  const handleNavigation = (path) => {
+    navigate(path);
   };
 
   return (
@@ -41,6 +48,8 @@ const SeeMySchoolInfo = () => {
           <p>Teachers: {schoolInfo.teachers}</p>
         </div>
       )}
+
+      <button onClick={ () => handleNavigation('/')}>Back to navigation page</button>
     </div>
   );
 };
