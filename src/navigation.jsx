@@ -1,6 +1,7 @@
 // Import necessary modules
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Navbar.css';
 
 // Define the Navigation component
 const Navigation = () => {

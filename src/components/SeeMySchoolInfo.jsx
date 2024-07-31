@@ -46,6 +46,7 @@ const SeeMySchoolInfo = () => {
           <p>City: {schoolInfo.city}</p>
           <p>Principal Name: {schoolInfo.principalName}</p>
           <p>Teachers: {schoolInfo.teachers}</p>
+          <button></button>
         </div>
       )}
 
