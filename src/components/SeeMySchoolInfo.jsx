@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const SeeMySchoolInfo = () => {
-  const [userId, setUserId] = useState(""); // User ID is the schoolId for the back end. It is used to fetch the school information.
+const SeeMySchoolInfo = ({userId, setUserId}) => {
+  // const [userId, setUserId] = useState(""); // User ID is the schoolId for the back end. It is used to fetch the school information.
   const [schoolInfo, setSchoolInfo] = useState(null);
   const [teachers, setTeachers] = useState([]);
+  const [teacherFirstName, setTeacherFirstName] = useState("");
+  const [teacherLastName, setTeacherLastName] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -31,6 +33,36 @@ const SeeMySchoolInfo = () => {
         setTeachers(data);
       } catch (error) {
         console.error("Error fetching teachers:", error);
+      }
+    }
+  };
+
+  const handleAddTeacher = async (e) => {
+    e.preventDefault();
+    if (schoolInfo && schoolInfo.schoolId) {
+      const newTeacher = {
+        teacherFirstName,
+        teacherLastName,
+        studentIds: [],
+        schoolId: schoolInfo.schoolId,
+      };
+      try {
+        const response = await fetch(
+          `http://localhost:8080/class_monitor/teacher`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newTeacher),
+          }
+        );
+        const data = await response.json();
+        setTeachers((prevTeachers) => [...prevTeachers, data]);
+        setTeacherFirstName("");
+        setTeacherLastName("");
+      } catch (error) {
+        console.error("Error adding teacher:", error);
       }
     }
   };
@@ -64,18 +96,41 @@ const SeeMySchoolInfo = () => {
           {teachers.length > 0 && (
             <div>
               <h3>Teachers</h3>
-              <ul>
-                {teachers.map((teacher) => (
-                  <li key={teacher.teacherId}>
-                    {teacher.teacherFirstName} {teacher.teacherLastName}
-                    <Link to={`/teacher/${teacher.teacherId}/students`}>
-                      View Students
-                    </Link>
-                  </li>
+              <div>
+                {teachers.map((teacher, index) => (
+                  <div>
+                  <Link
+                    key={index}
+                    to={{
+                      pathname: `/teacher/${teacher.teacherId}/students`,
+                      state: { schoolId: schoolInfo.schoolId },
+                    }}>
+                      <div>{teacher.teacherFirstName} {teacher.teacherLastName}</div> 
+                  </Link>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
+
+          <h3>Add a Teacher</h3>
+          <form onSubmit={handleAddTeacher}>
+            <label htmlFor="teacherFirstName">First Name:</label>
+            <input
+              type="text"
+              id="teacherFirstName"
+              value={teacherFirstName}
+              onChange={(e) => setTeacherFirstName(e.target.value)}
+            />
+            <label htmlFor="teacherLastName">Last Name:</label>
+            <input
+              type="text"
+              id="teacherLastName"
+              value={teacherLastName}
+              onChange={(e) => setTeacherLastName(e.target.value)}
+            />
+            <button type="submit">Add Teacher</button>
+          </form>
         </div>
       )}
 
